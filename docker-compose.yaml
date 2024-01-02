@@ -1,0 +1,64 @@
+version: '3.7'
+services:
+
+  frontend:
+    build:
+      context: ../news-app-react
+      dockerfile: ../news-app-docker/frontend/Dockerfile
+    tty: true
+    restart: always
+    volumes:
+      - ../news-app-react:/var/react
+      - /var/react/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ../news-app-laravel
+      dockerfile: ../news-app-docker/backend/Dockerfile
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ../news-app-laravel:/var/www
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  appdb:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: appdb
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - appdb
+    ports:
+      - 8443:80
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
