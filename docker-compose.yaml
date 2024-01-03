@@ -20,7 +20,7 @@ services:
       dockerfile: ../news-app-docker/backend/Dockerfile
     restart: always
     environment:
-      DB_HOST: db
+      DB_HOST: appdb
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
