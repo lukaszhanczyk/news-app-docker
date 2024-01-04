@@ -6,8 +6,10 @@ services:
       context: ../news-app-react
       dockerfile: ../news-app-docker/frontend/Dockerfile
     restart: always
+    stdin_open: true
+    tty: true
     volumes:
-      - ../news-app-react:/var/react
+      - ../news-app-react:/var/react:rw
       - /var/react/node_modules
     ports:
       - "3000:3000"
@@ -25,7 +27,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ../news-app-laravel:/var/www
+      - ../news-app-laravel:/var/www:rw
     ports:
       - "8000:8000"
     networks:
