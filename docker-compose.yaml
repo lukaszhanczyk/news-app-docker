@@ -2,10 +2,10 @@ version: '3.7'
 services:
 
   frontend:
+    container_name: frontend
     build:
       context: ../news-app-react
       dockerfile: ../news-app-docker/frontend/Dockerfile
-    restart: always
     stdin_open: true
     tty: true
     volumes:
@@ -17,10 +17,12 @@ services:
       - app-network
 
   backend:
+    container_name: backend
     build:
       context: ../news-app-laravel
       dockerfile: ../news-app-docker/backend/Dockerfile
-    restart: always
+    depends_on:
+      - appdb
     environment:
       DB_HOST: appdb
       DB_DATABASE: ${DB_DATABASE}
@@ -34,6 +36,7 @@ services:
       - app-network
 
   appdb:
+    container_name: appdb
     image: mysql:5.7
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -47,6 +50,7 @@ services:
       - app-network
 
   phpmyadmin:
+    container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin
     environment:
       PMA_HOST: appdb
